@@ -18,7 +18,7 @@ on:
 
 jobs:
   bump-version:
-    uses: DEMGroup/.github-private/.github/workflows/bump-version.yml@main
+    uses: DEMGroup/.github/.github/workflows/bump-version.yml@main
     secrets: inherit
     with:
       semver: ${{ inputs.semver || 'patch' }}
