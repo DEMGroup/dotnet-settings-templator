@@ -21414,7 +21414,7 @@ function run() {
             (0, core_1.debug)(`rename ${renameTo} org ${(0, core_1.getInput)('renameTo')}`);
             (0, core_1.debug)(`tmpl ${templatePath} org ${(0, core_1.getInput)('pathToTemplate')}`);
             (0, core_1.debug)(`repo ${repo} org ${github_1.context.repo.repo}`);
-            (0, core_1.debug)(`Full values from env, vars, and secrets: ${fullReplacement}`);
+            (0, core_1.debug)(`Full values from env, vars, and secrets: ${JSON.stringify(fullReplacement)}`);
             (0, core_1.debug)(`removeOtherSettingsFiles ${removeOtherSettingsFiles} org ${(0, core_1.getInput)('removeOtherSettingsFiles')}`);
             (0, core_1.info)('Delete old appsettings to overwrite');
             try {

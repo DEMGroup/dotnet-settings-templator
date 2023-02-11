@@ -57,7 +57,7 @@ export default async function run() {
     debug(`rename ${renameTo} org ${getInput('renameTo')}`);
     debug(`tmpl ${templatePath} org ${getInput('pathToTemplate')}`);
     debug(`repo ${repo} org ${githubContext.repo.repo}`);
-    debug(`Full values from env, vars, and secrets: ${fullReplacement}`);
+    debug(`Full values from env, vars, and secrets: ${JSON.stringify(fullReplacement)}`);
     debug(`removeOtherSettingsFiles ${removeOtherSettingsFiles} org ${getInput('removeOtherSettingsFiles')}`);
 
     info('Delete old appsettings to overwrite');
