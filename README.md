@@ -39,11 +39,13 @@ This would be an example template file that could be in the dotnet project:
 ```
 
 You would put these variables in your project as such:
+```
 env:
   EndpointUrl: 'https://seq.example.com'
+```
 
-github.com/{org}/{repo}/settings/secrets/actions
-  SEQ_KEY: 'secret_key_don_t_tell'
+github.com/{org}/{repo}/settings/secrets/actions<br/>
+`SEQ_KEY: 'secret_key_don_t_tell'`
 
 
 ### Verbose
