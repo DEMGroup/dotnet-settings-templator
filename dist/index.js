@@ -21325,12 +21325,6 @@ class Utils {
             return ((_a = paramsExpressionList[0]) === null || _a === void 0 ? void 0 : _a.original) || pathExpression.original;
         });
     }
-    getValueForTemplateVariable(variable) {
-        if (!Utils.isNullEmptyOrUndefined(this.fullReplacement[variable.toUpperCase()])) {
-            return this.fullReplacement[variable.toUpperCase()];
-        }
-        return null;
-    }
     static isNullEmptyOrUndefined(str) {
         return str === null || str === undefined || str === '';
     }
@@ -21420,6 +21414,7 @@ function run() {
             (0, core_1.debug)(`rename ${renameTo} org ${(0, core_1.getInput)('renameTo')}`);
             (0, core_1.debug)(`tmpl ${templatePath} org ${(0, core_1.getInput)('pathToTemplate')}`);
             (0, core_1.debug)(`repo ${repo} org ${github_1.context.repo.repo}`);
+            (0, core_1.debug)(`Full values from env, vars, and secrets: ${fullReplacement}`);
             (0, core_1.debug)(`removeOtherSettingsFiles ${removeOtherSettingsFiles} org ${(0, core_1.getInput)('removeOtherSettingsFiles')}`);
             (0, core_1.info)('Delete old appsettings to overwrite');
             try {
@@ -21510,15 +21505,15 @@ function run() {
             ];
             const templateVariables = utils.getHandlebarsVariables(templateAsString);
             let failedVariableValueCheck = false;
-            for (const vari of templateVariables) {
-                const value = utils.getValueForTemplateVariable(vari);
+            for (const variable of templateVariables) {
+                const value = fullReplacement[variable.toUpperCase()];
                 if (utils_1.default.isNullEmptyOrUndefined(value)) {
-                    (0, core_1.warning)(`Your template expects ${vari} but we could not find that setting in your secrets, vars, or env.`);
+                    (0, core_1.warning)(`Your template expects ${variable} but we could not find that setting in your secrets, vars, or env.`);
                     failedVariableValueCheck = true;
                 }
                 else {
                     outputTable.push([
-                        { header: false, data: vari },
+                        { header: false, data: variable },
                         { header: false, data: ':white_check_mark:' },
                         {
                             header: false,

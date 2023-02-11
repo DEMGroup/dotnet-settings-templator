@@ -57,6 +57,7 @@ export default async function run() {
     debug(`rename ${renameTo} org ${getInput('renameTo')}`);
     debug(`tmpl ${templatePath} org ${getInput('pathToTemplate')}`);
     debug(`repo ${repo} org ${githubContext.repo.repo}`);
+    debug(`Full values from env, vars, and secrets: ${fullReplacement}`);
     debug(`removeOtherSettingsFiles ${removeOtherSettingsFiles} org ${getInput('removeOtherSettingsFiles')}`);
 
     info('Delete old appsettings to overwrite');
@@ -153,14 +154,14 @@ export default async function run() {
     const templateVariables = utils.getHandlebarsVariables(templateAsString);
 
     let failedVariableValueCheck = false;
-    for (const vari of templateVariables) {
-      const value = utils.getValueForTemplateVariable(vari);
+    for (const variable of templateVariables) {
+      const value = fullReplacement[variable.toUpperCase()];
       if (Utils.isNullEmptyOrUndefined(value)) {
-        warning(`Your template expects ${vari} but we could not find that setting in your secrets, vars, or env.`);
+        warning(`Your template expects ${variable} but we could not find that setting in your secrets, vars, or env.`);
         failedVariableValueCheck = true;
       } else {
         outputTable.push([
-          { header: false, data: vari },
+          { header: false, data: variable },
           { header: false, data: ':white_check_mark:' },
           {
             header: false,

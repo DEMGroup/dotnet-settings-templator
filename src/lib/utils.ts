@@ -28,13 +28,6 @@ class Utils {
       });
   }
 
-  public getValueForTemplateVariable(variable: string): string | null {
-    if (!Utils.isNullEmptyOrUndefined(this.fullReplacement[variable.toUpperCase()])) {
-      return this.fullReplacement[variable.toUpperCase()] as string;
-    }
-    return null;
-  }
-
   public static isNullEmptyOrUndefined(str: string | undefined | null): boolean {
     return str === null || str === undefined || str === '';
   }
