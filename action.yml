@@ -1,6 +1,8 @@
 name: Configure the dotnet appsettings.tmpl.json
 description: 'Uses a bunch of secrets and attempts to shim a dotnet settings tmpl'
-icon: 'settings'
+branding:
+  icon: 'settings'
+  color: 'green'
 inputs:
   secrets:
     description: Secrets (toJson(secrets))
