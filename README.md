@@ -4,13 +4,14 @@ You should run `npm i` & `npm run all`. This will lint, pretty, test, and packag
 
 ## Use
 
+Default location it will find the appsettings.tmpl.json is `{root}/${repo_name}/appsettings.tmpl.json`
+
 You should pass in your secrets, vars, and env to the templator to compile with.
 
 ```yml
 - uses: DEMGroup/dotnet-settings-templator@v1.0.3
   id: new-settings
   with:
-    pathToTmpl: "./src/Aesir.Heimdall/appsettings.tmpl.json"
     secrets: "${{ toJSON(secrets) }}"
     vars: "${{ toJSON(vars) }}"
     env: "${{ toJSON(env) }}"
@@ -43,3 +44,20 @@ env:
 
 github.com/{org}/{repo}/settings/secrets/actions
   SEQ_KEY: 'secret_key_don_t_tell'
+
+
+### Verbose
+
+Verbose example
+
+```yml
+- uses: DEMGroup/dotnet-settings-templator@v1.0.3
+  id: new-settings
+  with:
+    pathToTemplate: "./src/Aesir.Heimdall/appsettings.tmpl.json"
+    renameTo: "appsettings.Production.json"
+    removeOtherSettingsFiles: false
+    secrets: "${{ toJSON(secrets) }}"
+    vars: "${{ toJSON(vars) }}"
+    env: "${{ toJSON(env) }}"
+```
