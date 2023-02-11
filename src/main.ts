@@ -11,7 +11,7 @@ import Utils from './lib/utils';
 export default async function run() {
   try {
     let utils;
-    const removeOtherSettingsFiles = Utils.isBooleanTrue(getInput('removeOtherSettingsFiles'));
+    const removeOtherSettingsFiles = Utils.getBooleanValue(getInput('removeOtherSettingsFiles')) === true;
     const rawSecrets = getInput('secrets');
     const rawVars = getInput('vars');
     const rawEnv = getInput('env');

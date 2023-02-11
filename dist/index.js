@@ -21334,7 +21334,7 @@ class Utils {
     static isNullEmptyOrUndefined(str) {
         return str === null || str === undefined || str === '';
     }
-    static isBooleanTrue(str) {
+    static getBooleanValue(str) {
         if (str === 'true' || str === true || str === 'True' || str === 'TRUE') {
             return true;
         }
@@ -21376,7 +21376,7 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             let utils;
-            const removeOtherSettingsFiles = utils_1.default.isBooleanTrue((0, core_1.getInput)('removeOtherSettingsFiles'));
+            const removeOtherSettingsFiles = utils_1.default.getBooleanValue((0, core_1.getInput)('removeOtherSettingsFiles')) === true;
             const rawSecrets = (0, core_1.getInput)('secrets');
             const rawVars = (0, core_1.getInput)('vars');
             const rawEnv = (0, core_1.getInput)('env');

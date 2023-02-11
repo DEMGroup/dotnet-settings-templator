@@ -39,7 +39,7 @@ class Utils {
     return str === null || str === undefined || str === '';
   }
 
-  public static isBooleanTrue(str: string | undefined | null | boolean): boolean {
+  public static getBooleanValue(str: string | undefined | null | boolean): boolean {
     if (str === 'true' || str === true || str === 'True' || str === 'TRUE') {
       return true;
     }
