@@ -32,7 +32,7 @@ inputs:
 
 output:
   settingsJsonString:
-    description: Fully replaced settings file in json string format (use JSON.parse(${{ needs.job.outputs.settingsJsonString }}) to/use)
+    description: Fully replaced settings file in json string format (use JSON.parse( needs.job.outputs.settingsJsonString ) to/use)
 runs:
   using: 'node16'
   main: 'dist/index.js'
