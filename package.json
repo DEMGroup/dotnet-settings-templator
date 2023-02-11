@@ -1,7 +1,7 @@
 {
-  "name": "config-settings",
+  "name": "dotnet-settings-templator",
   "version": "1.0.0",
-  "description": "",
+  "description": "A handlebars templator for converting a appsettings.tmpl.json to a fully shimmed appsettings.json.",
   "main": "src/index.ts",
   "scripts": {
     "build": "tsc",
