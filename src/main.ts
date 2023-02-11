@@ -7,6 +7,7 @@ import path from 'path';
 import glob from 'glob';
 
 import Utils from './lib/utils';
+import _ from 'lodash';
 
 export default async function run() {
   try {
@@ -113,6 +114,8 @@ export default async function run() {
 
     if (originalAppSettingsJson) {
       if (Object.keys(originalAppSettingsJson) !== Object.keys(templateJson)) {
+        const diff = _.difference(Object.keys(originalAppSettingsJson), Object.keys(templateJson));
+        summary.addHeading('Appsettings Configuration Failed :x:').addDetails('Missing Settings', diff.join(', ')).write();
         setFailed(
           `Your appsettings.json key count (${Object.keys(originalAppSettingsJson).length}) doesn't equal your template (${Object.keys(templateJson).length})`
         );
@@ -153,12 +156,12 @@ export default async function run() {
 
     const templateVariables = utils.getHandlebarsVariables(templateAsString);
 
-    let failedVariableValueCheck = false;
+    const failedVariableValueCheck: string[] = [];
     for (const variable of templateVariables) {
       const value = fullReplacement[variable.toUpperCase()];
       if (Utils.isNullEmptyOrUndefined(value)) {
         warning(`Your template expects ${variable} but we could not find that setting in your secrets, vars, or env.`);
-        failedVariableValueCheck = true;
+        failedVariableValueCheck.push(variable);
       } else {
         outputTable.push([
           { header: false, data: variable },
@@ -170,9 +173,12 @@ export default async function run() {
         ]);
       }
     }
-    if (failedVariableValueCheck) {
+    if (failedVariableValueCheck.length === 0) {
+      summary.addHeading('Appsettings Configuration Failed :x:').addDetails('Missing Settings', failedVariableValueCheck.join(', ')).write();
       setFailed(
-        `You are missing variables in your secrets, variables, env. Please check ${templatePath} and the [secrets store](https://github.com/${githubContext.repo.owner}/${githubContext.repo.repo}/settings/secrets/actions) for the values.`
+        `You are missing variables in your secrets, variables, env. Please check ${templatePath} and https://github.com/${githubContext.repo.owner}/${
+          githubContext.repo.repo
+        }/settings/secrets/actions for the values ${failedVariableValueCheck.join(', ')}.`
       );
       return;
     }
