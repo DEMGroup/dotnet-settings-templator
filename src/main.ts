@@ -12,19 +12,33 @@ export default async function run() {
   try {
     let utils;
     const removeOtherSettingsFiles = Utils.isBooleanTrue(getInput('removeOtherSettingsFiles'));
-    const rawSecrets = getInput('secrets', { required: true });
-    const rawVars = getInput('vars', { required: true });
-    const rawEnv = getInput('env', { required: true });
-    let secrets;
-    let vars;
-    let env;
+    const rawSecrets = getInput('secrets');
+    const rawVars = getInput('vars');
+    const rawEnv = getInput('env');
+    let fullReplacement;
     try {
-      secrets = JSON.parse(rawSecrets);
-      vars = JSON.parse(rawVars);
-      env = JSON.parse(rawEnv);
-      utils = new Utils({ secrets, vars, env });
+      let secrets;
+      let vars;
+      let env;
+      if (Utils.isNotNullEmptyOrUndefined(rawSecrets)) {
+        secrets = JSON.parse(rawSecrets);
+      }
+      if (Utils.isNotNullEmptyOrUndefined(rawVars)) {
+        vars = JSON.parse(rawVars);
+      }
+      if (Utils.isNotNullEmptyOrUndefined(rawEnv)) {
+        env = JSON.parse(rawEnv);
+      }
+      fullReplacement = { ...vars, ...env, ...secrets };
+      if (!Utils.isNotNullEmptyOrUndefined(fullReplacement)) {
+        setFailed(
+          'We had trouble getting your secrets, vars, and/or env. Please check that they are either valid json or you provided **at least** one of them'
+        );
+        return;
+      }
+      utils = new Utils(fullReplacement);
     } catch (e) {
-      setFailed(`We had trouble parsing your secrets, vars, and envs ${e}`);
+      setFailed(`We had trouble parsing your secrets, vars, and env ${e}`);
       return;
     }
     let templatePath = getInput('pathToTemplate');
@@ -43,7 +57,6 @@ export default async function run() {
     debug(`rename ${renameTo} org ${getInput('renameTo')}`);
     debug(`tmpl ${templatePath} org ${getInput('pathToTmpl')}`);
     debug(`repo ${repo} org ${githubContext.repo.repo}`);
-    debug(`vars ${JSON.stringify(vars)} org ${getInput('vars')}`);
     debug(`removeOtherSettingsFiles ${removeOtherSettingsFiles} org ${getInput('removeOtherSettingsFiles')}`);
 
     info('Delete old appsettings to overwrite');
@@ -166,7 +179,7 @@ export default async function run() {
       compat: true
     });
 
-    const renderedTemplate = template({ ...vars, ...env, ...secrets });
+    const renderedTemplate = template(fullReplacement);
     const stringOfTender = JSON.stringify(JSON.parse(renderedTemplate));
 
     const filePath = `${path.parse(templatePath).dir}/${renameTo}`;

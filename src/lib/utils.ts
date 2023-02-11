@@ -3,14 +3,10 @@ import hbs from 'hbs';
 import { AesirJson } from './types';
 
 class Utils {
-  private readonly secrets: AesirJson;
-  private readonly vars: AesirJson;
-  private readonly env: AesirJson;
+  private readonly fullReplacement: AesirJson;
 
-  constructor({ secrets, vars, env }: { secrets: AesirJson; vars: AesirJson; env: AesirJson }) {
-    this.secrets = secrets;
-    this.vars = vars;
-    this.env = env;
+  constructor(full: AesirJson) {
+    this.fullReplacement = full;
   }
 
   /**
@@ -33,14 +29,8 @@ class Utils {
   }
 
   public getValueForTemplateVariable(variable: string): string | null {
-    if (Utils.isNotNullEmptyOrUndefined(this.secrets[variable.toUpperCase()])) {
-      return this.secrets[variable.toUpperCase()] as string;
-    }
-    if (Utils.isNotNullEmptyOrUndefined(this.vars[variable.toUpperCase()])) {
-      return this.vars[variable.toUpperCase()] as string;
-    }
-    if (Utils.isNotNullEmptyOrUndefined(this.env[variable.toUpperCase()])) {
-      return this.env[variable.toUpperCase()] as string;
+    if (Utils.isNotNullEmptyOrUndefined(this.fullReplacement[variable.toUpperCase()])) {
+      return this.fullReplacement[variable.toUpperCase()] as string;
     }
     return null;
   }

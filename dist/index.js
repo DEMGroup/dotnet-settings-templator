@@ -21305,10 +21305,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const handlebars_1 = __importDefault(__nccwpck_require__(7492));
 class Utils {
-    constructor({ secrets, vars, env }) {
-        this.secrets = secrets;
-        this.vars = vars;
-        this.env = env;
+    constructor(full) {
+        this.fullReplacement = full;
     }
     /**
      * Getting the variables from the Handlebars template.
@@ -21328,14 +21326,8 @@ class Utils {
         });
     }
     getValueForTemplateVariable(variable) {
-        if (Utils.isNotNullEmptyOrUndefined(this.secrets[variable.toUpperCase()])) {
-            return this.secrets[variable.toUpperCase()];
-        }
-        if (Utils.isNotNullEmptyOrUndefined(this.vars[variable.toUpperCase()])) {
-            return this.vars[variable.toUpperCase()];
-        }
-        if (Utils.isNotNullEmptyOrUndefined(this.env[variable.toUpperCase()])) {
-            return this.env[variable.toUpperCase()];
+        if (Utils.isNotNullEmptyOrUndefined(this.fullReplacement[variable.toUpperCase()])) {
+            return this.fullReplacement[variable.toUpperCase()];
         }
         return null;
     }
@@ -21385,20 +21377,32 @@ function run() {
         try {
             let utils;
             const removeOtherSettingsFiles = utils_1.default.isBooleanTrue((0, core_1.getInput)('removeOtherSettingsFiles'));
-            const rawSecrets = (0, core_1.getInput)('secrets', { required: true });
-            const rawVars = (0, core_1.getInput)('vars', { required: true });
-            const rawEnv = (0, core_1.getInput)('env', { required: true });
-            let secrets;
-            let vars;
-            let env;
+            const rawSecrets = (0, core_1.getInput)('secrets');
+            const rawVars = (0, core_1.getInput)('vars');
+            const rawEnv = (0, core_1.getInput)('env');
+            let fullReplacement;
             try {
-                secrets = JSON.parse(rawSecrets);
-                vars = JSON.parse(rawVars);
-                env = JSON.parse(rawEnv);
-                utils = new utils_1.default({ secrets, vars, env });
+                let secrets;
+                let vars;
+                let env;
+                if (utils_1.default.isNotNullEmptyOrUndefined(rawSecrets)) {
+                    secrets = JSON.parse(rawSecrets);
+                }
+                if (utils_1.default.isNotNullEmptyOrUndefined(rawVars)) {
+                    vars = JSON.parse(rawVars);
+                }
+                if (utils_1.default.isNotNullEmptyOrUndefined(rawEnv)) {
+                    env = JSON.parse(rawEnv);
+                }
+                fullReplacement = Object.assign(Object.assign(Object.assign({}, vars), env), secrets);
+                if (!utils_1.default.isNotNullEmptyOrUndefined(fullReplacement)) {
+                    (0, core_1.setFailed)('We had trouble getting your secrets, vars, and/or env. Please check that they are either valid json or you provided **at least** one of them');
+                    return;
+                }
+                utils = new utils_1.default(fullReplacement);
             }
             catch (e) {
-                (0, core_1.setFailed)(`We had trouble parsing your secrets, vars, and envs ${e}`);
+                (0, core_1.setFailed)(`We had trouble parsing your secrets, vars, and env ${e}`);
                 return;
             }
             let templatePath = (0, core_1.getInput)('pathToTemplate');
@@ -21416,7 +21420,6 @@ function run() {
             (0, core_1.debug)(`rename ${renameTo} org ${(0, core_1.getInput)('renameTo')}`);
             (0, core_1.debug)(`tmpl ${templatePath} org ${(0, core_1.getInput)('pathToTmpl')}`);
             (0, core_1.debug)(`repo ${repo} org ${github_1.context.repo.repo}`);
-            (0, core_1.debug)(`vars ${JSON.stringify(vars)} org ${(0, core_1.getInput)('vars')}`);
             (0, core_1.debug)(`removeOtherSettingsFiles ${removeOtherSettingsFiles} org ${(0, core_1.getInput)('removeOtherSettingsFiles')}`);
             (0, core_1.info)('Delete old appsettings to overwrite');
             try {
@@ -21530,7 +21533,7 @@ function run() {
             const template = handlebars_1.default.compile(templateAsString, {
                 compat: true
             });
-            const renderedTemplate = template(Object.assign(Object.assign(Object.assign({}, vars), env), secrets));
+            const renderedTemplate = template(fullReplacement);
             const stringOfTender = JSON.stringify(JSON.parse(renderedTemplate));
             const filePath = `${path_1.default.parse(templatePath).dir}/${renameTo}`;
             try {

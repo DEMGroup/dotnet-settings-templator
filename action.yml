@@ -1,20 +1,20 @@
 name: Configure the dotnet appsettings.tmpl.json
-description: 'Uses a bunch of secrets and attempts to shim a dotnet settings tmpl'
+description: 'Uses secrets, env, and vars to shim a dotnet settings tmpl and output a appsettings.json file'
 branding:
   icon: 'settings'
   color: 'green'
 inputs:
   secrets:
     description: Secrets (toJson(secrets))
-    required: true
+    required: false
     type: string
   vars:
     description: Vars (toJson(vars))
-    required: true
+    required: false
     type: string
   env:
     description: Env (toJson(env))
-    required: true
+    required: false
     type: string
   pathToTemplate:
     description: This is the path to the tmpl file to configure (default - ./repo-name/appsettings.tmpl.json)
