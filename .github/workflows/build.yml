@@ -1,0 +1,97 @@
+name: Build Aesir Configure Settings action
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: Release a new version or simply tag
+        type: boolean
+        default: false
+      semver:
+        description: Semver level to bump (Possible Versions - major, minor, patch)
+        required: false
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  bump-version:
+    uses: DEMGroup/.github-private/.github/workflows/bump-version.yml@main
+    secrets: inherit
+    with:
+      semver: ${{ inputs.semver || 'patch' }}
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [bump-version]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+      - name: Install deps
+        run: npm ci
+      - name: Build the app
+        run: npm run build
+      - name: Run the tests
+        run: npm run test:ci
+      - name: Check Test File Exists
+        if: success() || failure()
+        id: hasTests
+        run: |
+          if compgen -G "testReports/jest-*.xml" > /dev/null; then
+            hasTest=true
+          else
+            hasTest=false
+          fi
+          echo "hasTests=$hasTest" >> $GITHUB_OUTPUT
+      - name: Test Reporter
+        if: ${{ steps.hasTests.outputs.hasTests == 'true' }}
+        uses: phoenix-actions/test-reporting@v10
+        with:
+          name: ${{github.repository}} Test Results
+          path: testReports/jest-*.xml
+          reporter: jest-junit
+          output-to: step-summary
+
+  create-new-github-release:
+    needs: [build, bump-version]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Push New Tag (temp manual because actions-ecosystem/action-push-tag@v1 is broken)
+        id: tag
+        run: |
+          message='${{ needs.bump-version.outputs.new_version }}: Sha #${{ github.sha }}'
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git tag -a "${{ needs.bump-version.outputs.new_version_with_v }}" -m "${message}"
+          git push origin "${{ needs.bump-version.outputs.new_version_with_v }}"
+
+      - name: Create a release from the tag
+        if: ${{ inputs.release }}
+        id: release
+        run: |
+          gh release create --generate-notes "${{ needs.bump-version.outputs.new_version_with_v }}"
+          gh release upload "${{ needs.bump-version.outputs.new_version_with_v }}" './dist/index.js'
+          gh release upload "${{ needs.bump-version.outputs.new_version_with_v }}" './dist/index.js.map'
+          gh release upload "${{ needs.bump-version.outputs.new_version_with_v }}" './dist/licenses.txt'
+          gh release upload "${{ needs.bump-version.outputs.new_version_with_v }}" './dist/sourcemap-register.js'
+          gh release upload "${{ needs.bump-version.outputs.new_version_with_v }}" './action.yml'
+          gh release upload "${{ needs.bump-version.outputs.new_version_with_v }}" './package.json'
+          gh release upload "${{ needs.bump-version.outputs.new_version_with_v }}" './package-lock.json'
+
+      - name: Add release summary
+        if: ${{ inputs.release }}
+        run: |
+          echo '### New version released! :rocket:' >> $GITHUB_STEP_SUMMARY
+          echo 'Version number: ${{ needs.bump-version.outputs.new_version_with_v }}' >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,19 @@
+{
+  "env": {
+    "node": true,
+    "es6": true,
+    "jest/globals": true
+  },
+  "plugins": ["jest", "@typescript-eslint"],
+  "extends": ["plugin:github/recommended"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "project": "./tsconfig.json"
+  },
+  "rules": {
+    "i18n-text/no-en": "off",
+    "no-unused-vars": "warn"
+  }
+}
