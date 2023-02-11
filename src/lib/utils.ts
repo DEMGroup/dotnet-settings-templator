@@ -29,14 +29,14 @@ class Utils {
   }
 
   public getValueForTemplateVariable(variable: string): string | null {
-    if (Utils.isNotNullEmptyOrUndefined(this.fullReplacement[variable.toUpperCase()])) {
+    if (!Utils.isNullEmptyOrUndefined(this.fullReplacement[variable.toUpperCase()])) {
       return this.fullReplacement[variable.toUpperCase()] as string;
     }
     return null;
   }
 
-  public static isNotNullEmptyOrUndefined(str: string | undefined | null): boolean {
-    return str !== null && str !== undefined && str !== '';
+  public static isNullEmptyOrUndefined(str: string | undefined | null): boolean {
+    return str === null || str === undefined || str === '';
   }
 
   public static isBooleanTrue(str: string | undefined | null | boolean): boolean {

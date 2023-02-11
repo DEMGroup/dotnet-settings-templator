@@ -21326,13 +21326,13 @@ class Utils {
         });
     }
     getValueForTemplateVariable(variable) {
-        if (Utils.isNotNullEmptyOrUndefined(this.fullReplacement[variable.toUpperCase()])) {
+        if (!Utils.isNullEmptyOrUndefined(this.fullReplacement[variable.toUpperCase()])) {
             return this.fullReplacement[variable.toUpperCase()];
         }
         return null;
     }
-    static isNotNullEmptyOrUndefined(str) {
-        return str !== null && str !== undefined && str !== '';
+    static isNullEmptyOrUndefined(str) {
+        return str === null || str === undefined || str === '';
     }
     static isBooleanTrue(str) {
         if (str === 'true' || str === true || str === 'True' || str === 'TRUE') {
@@ -21385,17 +21385,17 @@ function run() {
                 let secrets;
                 let vars;
                 let env;
-                if (utils_1.default.isNotNullEmptyOrUndefined(rawSecrets)) {
+                if (!utils_1.default.isNullEmptyOrUndefined(rawSecrets)) {
                     secrets = JSON.parse(rawSecrets);
                 }
-                if (utils_1.default.isNotNullEmptyOrUndefined(rawVars)) {
+                if (!utils_1.default.isNullEmptyOrUndefined(rawVars)) {
                     vars = JSON.parse(rawVars);
                 }
-                if (utils_1.default.isNotNullEmptyOrUndefined(rawEnv)) {
+                if (!utils_1.default.isNullEmptyOrUndefined(rawEnv)) {
                     env = JSON.parse(rawEnv);
                 }
                 fullReplacement = Object.assign(Object.assign(Object.assign({}, vars), env), secrets);
-                if (!utils_1.default.isNotNullEmptyOrUndefined(fullReplacement)) {
+                if (utils_1.default.isNullEmptyOrUndefined(fullReplacement)) {
                     (0, core_1.setFailed)('We had trouble getting your secrets, vars, and/or env. Please check that they are either valid json or you provided **at least** one of them');
                     return;
                 }
@@ -21418,7 +21418,7 @@ function run() {
             }
             (0, core_1.debug)('Read all the inputs');
             (0, core_1.debug)(`rename ${renameTo} org ${(0, core_1.getInput)('renameTo')}`);
-            (0, core_1.debug)(`tmpl ${templatePath} org ${(0, core_1.getInput)('pathToTmpl')}`);
+            (0, core_1.debug)(`tmpl ${templatePath} org ${(0, core_1.getInput)('pathToTemplate')}`);
             (0, core_1.debug)(`repo ${repo} org ${github_1.context.repo.repo}`);
             (0, core_1.debug)(`removeOtherSettingsFiles ${removeOtherSettingsFiles} org ${(0, core_1.getInput)('removeOtherSettingsFiles')}`);
             (0, core_1.info)('Delete old appsettings to overwrite');
@@ -21459,7 +21459,8 @@ function run() {
             let templateAsString;
             let templateJson;
             try {
-                templateJson = JSON.parse(yield (0, promises_1.readFile)(templatePath, 'utf8'));
+                const fileContents = yield (0, promises_1.readFile)(templatePath, 'utf8');
+                templateJson = JSON.parse(fileContents);
                 templateAsString = JSON.stringify(templateJson);
                 (0, core_1.info)(`Yay, this file, ${templatePath} worked`);
             }
@@ -21467,7 +21468,7 @@ function run() {
                 (0, core_1.setFailed)(`error on ${templatePath}, ${e}`);
                 return;
             }
-            if (utils_1.default.isNotNullEmptyOrUndefined(templateAsString)) {
+            if (utils_1.default.isNullEmptyOrUndefined(templateAsString)) {
                 (0, core_1.setFailed)(`Could not retrieve and read ${templatePath}`);
                 return;
             }
@@ -21511,7 +21512,7 @@ function run() {
             let failedVariableValueCheck = false;
             for (const vari of templateVariables) {
                 const value = utils.getValueForTemplateVariable(vari);
-                if (utils_1.default.isNotNullEmptyOrUndefined(value)) {
+                if (utils_1.default.isNullEmptyOrUndefined(value)) {
                     (0, core_1.warning)(`Your template expects ${vari} but we could not find that setting in your secrets, vars, or env.`);
                     failedVariableValueCheck = true;
                 }

@@ -20,17 +20,17 @@ export default async function run() {
       let secrets;
       let vars;
       let env;
-      if (Utils.isNotNullEmptyOrUndefined(rawSecrets)) {
+      if (!Utils.isNullEmptyOrUndefined(rawSecrets)) {
         secrets = JSON.parse(rawSecrets);
       }
-      if (Utils.isNotNullEmptyOrUndefined(rawVars)) {
+      if (!Utils.isNullEmptyOrUndefined(rawVars)) {
         vars = JSON.parse(rawVars);
       }
-      if (Utils.isNotNullEmptyOrUndefined(rawEnv)) {
+      if (!Utils.isNullEmptyOrUndefined(rawEnv)) {
         env = JSON.parse(rawEnv);
       }
       fullReplacement = { ...vars, ...env, ...secrets };
-      if (!Utils.isNotNullEmptyOrUndefined(fullReplacement)) {
+      if (Utils.isNullEmptyOrUndefined(fullReplacement)) {
         setFailed(
           'We had trouble getting your secrets, vars, and/or env. Please check that they are either valid json or you provided **at least** one of them'
         );
@@ -55,7 +55,7 @@ export default async function run() {
 
     debug('Read all the inputs');
     debug(`rename ${renameTo} org ${getInput('renameTo')}`);
-    debug(`tmpl ${templatePath} org ${getInput('pathToTmpl')}`);
+    debug(`tmpl ${templatePath} org ${getInput('pathToTemplate')}`);
     debug(`repo ${repo} org ${githubContext.repo.repo}`);
     debug(`removeOtherSettingsFiles ${removeOtherSettingsFiles} org ${getInput('removeOtherSettingsFiles')}`);
 
@@ -96,7 +96,8 @@ export default async function run() {
     let templateAsString;
     let templateJson;
     try {
-      templateJson = JSON.parse(await readFile(templatePath, 'utf8'));
+      const fileContents = await readFile(templatePath, 'utf8');
+      templateJson = JSON.parse(fileContents);
       templateAsString = JSON.stringify(templateJson);
       info(`Yay, this file, ${templatePath} worked`);
     } catch (e) {
@@ -104,7 +105,7 @@ export default async function run() {
       return;
     }
 
-    if (Utils.isNotNullEmptyOrUndefined(templateAsString)) {
+    if (Utils.isNullEmptyOrUndefined(templateAsString)) {
       setFailed(`Could not retrieve and read ${templatePath}`);
       return;
     }
@@ -154,7 +155,7 @@ export default async function run() {
     let failedVariableValueCheck = false;
     for (const vari of templateVariables) {
       const value = utils.getValueForTemplateVariable(vari);
-      if (Utils.isNotNullEmptyOrUndefined(value)) {
+      if (Utils.isNullEmptyOrUndefined(value)) {
         warning(`Your template expects ${vari} but we could not find that setting in your secrets, vars, or env.`);
         failedVariableValueCheck = true;
       } else {
