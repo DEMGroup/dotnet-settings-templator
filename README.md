@@ -9,7 +9,7 @@ Default location it will find the appsettings.tmpl.json is `{root}/${repo_name}/
 You should pass in your secrets, vars, and env to the templator to compile with.
 
 ```yml
-- uses: DEMGroup/dotnet-settings-templator@v1.0.3
+- uses: DEMGroup/dotnet-settings-templator@v1.1.0
   id: new-settings
   with:
     secrets: "${{ toJSON(secrets) }}"
