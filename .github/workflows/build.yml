@@ -91,7 +91,6 @@ jobs:
           gh release upload "${{ needs.bump-version.outputs.new_version_with_v }}" './package-lock.json'
 
       - name: Add release summary
-        if: ${{ inputs.release }}
         run: |
-          echo '### New version released! :rocket:' >> $GITHUB_STEP_SUMMARY
+          echo '## New Version ${{ (inputs.release && 'Released') || 'Tagged' }}! :rocket:' >> $GITHUB_STEP_SUMMARY
           echo 'Version number: ${{ needs.bump-version.outputs.new_version_with_v }}' >> $GITHUB_STEP_SUMMARY
