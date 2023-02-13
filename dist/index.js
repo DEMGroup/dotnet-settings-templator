@@ -38742,7 +38742,7 @@ function run() {
                     ]);
                 }
             }
-            if (failedVariableValueCheck.length === 0) {
+            if (failedVariableValueCheck.length !== 0) {
                 summary_1.summary.addHeading('Appsettings Configuration Failed :x:').addDetails('Missing Settings', failedVariableValueCheck.join(', ')).write();
                 (0, core_1.setFailed)(`You are missing variables in your secrets, variables, env. Please check ${templatePath} and https://github.com/${github_1.context.repo.owner}/${github_1.context.repo.repo}/settings/secrets/actions for the values ${failedVariableValueCheck.join(', ')}.`);
                 return;

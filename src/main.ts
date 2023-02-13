@@ -173,7 +173,7 @@ export default async function run() {
         ]);
       }
     }
-    if (failedVariableValueCheck.length === 0) {
+    if (failedVariableValueCheck.length !== 0) {
       summary.addHeading('Appsettings Configuration Failed :x:').addDetails('Missing Settings', failedVariableValueCheck.join(', ')).write();
       setFailed(
         `You are missing variables in your secrets, variables, env. Please check ${templatePath} and https://github.com/${githubContext.repo.owner}/${
