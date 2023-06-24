@@ -38688,9 +38688,12 @@ function run() {
             if (originalAppSettingsJson) {
                 if (Object.keys(originalAppSettingsJson) !== Object.keys(templateJson)) {
                     const diff = lodash_1.default.difference(Object.keys(originalAppSettingsJson), Object.keys(templateJson));
-                    summary_1.summary.addHeading('Appsettings Configuration Failed :x:').addDetails('Missing Settings', diff.join(', ')).write();
-                    (0, core_1.setFailed)(`Your appsettings.json key count (${Object.keys(originalAppSettingsJson).length}) doesn't equal your template (${Object.keys(templateJson).length})`);
-                    return;
+                    summary_1.summary
+                        .addHeading('Appsettings Configuration Missing Keys :x:')
+                        .addDetails(`Your appsettings.json key count (${Object.keys(originalAppSettingsJson).length}) doesn't equal your template (${Object.keys(templateJson).length})
+            \n
+            \n
+            Missing Settings`, diff.join(', ')).write();
                 }
             }
             const outputTable = [
