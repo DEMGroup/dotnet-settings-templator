@@ -115,11 +115,12 @@ export default async function run() {
     if (originalAppSettingsJson) {
       if (Object.keys(originalAppSettingsJson) !== Object.keys(templateJson)) {
         const diff = _.difference(Object.keys(originalAppSettingsJson), Object.keys(templateJson));
-        summary.addHeading('Appsettings Configuration Failed :x:').addDetails('Missing Settings', diff.join(', ')).write();
-        setFailed(
-          `Your appsettings.json key count (${Object.keys(originalAppSettingsJson).length}) doesn't equal your template (${Object.keys(templateJson).length})`
-        );
-        return;
+        summary
+          .addHeading('Appsettings Configuration Missing Keys :x:')
+          .addDetails(`Your appsettings.json key count (${Object.keys(originalAppSettingsJson).length}) doesn't equal your template (${Object.keys(templateJson).length})
+            \n
+            \n
+            Missing Settings`, diff.join(', ')).write();
       }
     }
 
