@@ -38731,24 +38731,17 @@ function run() {
             for (const variable of templateVariables) {
                 const value = fullReplacement[variable.toUpperCase()];
                 if (utils_1.default.isNullEmptyOrUndefined(value)) {
-                    (0, core_1.warning)(`Your template expects ${variable} but we could not find that setting in your secrets, vars, or env.`);
-                    failedVariableValueCheck.push(variable);
+                    (0, core_1.warning)(`Your template expects ${variable} but we could not find that setting in your secrets, vars, or env we will use an empty string ""`);
+                    fullReplacement[variable.toUpperCase()] = "";
                 }
-                else {
-                    outputTable.push([
-                        { header: false, data: variable },
-                        { header: false, data: ':white_check_mark:' },
-                        {
-                            header: false,
-                            data: value || '***'
-                        }
-                    ]);
-                }
-            }
-            if (failedVariableValueCheck.length !== 0) {
-                summary_1.summary.addHeading('Appsettings Configuration Failed :x:').addDetails('Missing Settings', failedVariableValueCheck.join(', ')).write();
-                (0, core_1.setFailed)(`You are missing variables in your secrets, variables, env. Please check ${templatePath} and https://github.com/${github_1.context.repo.owner}/${github_1.context.repo.repo}/settings/secrets/actions for the values ${failedVariableValueCheck.join(', ')}.`);
-                return;
+                outputTable.push([
+                    { header: false, data: variable },
+                    { header: false, data: ':white_check_mark:' },
+                    {
+                        header: false,
+                        data: value || '***'
+                    }
+                ]);
             }
             const template = handlebars_1.default.compile(templateAsString, {
                 compat: true

@@ -161,27 +161,17 @@ export default async function run() {
     for (const variable of templateVariables) {
       const value = fullReplacement[variable.toUpperCase()];
       if (Utils.isNullEmptyOrUndefined(value)) {
-        warning(`Your template expects ${variable} but we could not find that setting in your secrets, vars, or env.`);
-        failedVariableValueCheck.push(variable);
-      } else {
-        outputTable.push([
-          { header: false, data: variable },
-          { header: false, data: ':white_check_mark:' },
-          {
-            header: false,
-            data: value || '***'
-          }
-        ]);
+        warning(`Your template expects ${variable} but we could not find that setting in your secrets, vars, or env we will use an empty string ""`);
+        fullReplacement[variable.toUpperCase()] = "";
       }
-    }
-    if (failedVariableValueCheck.length !== 0) {
-      summary.addHeading('Appsettings Configuration Failed :x:').addDetails('Missing Settings', failedVariableValueCheck.join(', ')).write();
-      setFailed(
-        `You are missing variables in your secrets, variables, env. Please check ${templatePath} and https://github.com/${githubContext.repo.owner}/${
-          githubContext.repo.repo
-        }/settings/secrets/actions for the values ${failedVariableValueCheck.join(', ')}.`
-      );
-      return;
+      outputTable.push([
+        { header: false, data: variable },
+        { header: false, data: ':white_check_mark:' },
+        {
+          header: false,
+          data: value || '***'
+        }
+      ]);
     }
 
     const template = Handlebars.compile(templateAsString, {
